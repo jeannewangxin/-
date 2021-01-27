@@ -160,8 +160,18 @@
 
 
 	10)垃圾回收的几种类型：
-		A.Minor GC
-		B.Major GC
-		C.Full GC
-		D.Stop-The-World		
+		A.Minor GC或Yong GC - 年轻代空间回收内存
+			a.当JVM无法为一个新的对象分配空间时会触发Minor GC，比如当Eden区满了，故Eden区越小，越频繁执行Minor GC。
+			b.当年轻代中的Eden区分配满的时候，年轻代中的部分对象会晋升到老年代，所以Minor GC后老年代的占用量通常会提高。
+			c.所有的Minor GC都会触发Stop-The-World，停止应用程序的线程。对于大部分应用程序，停顿导致的延迟都可以忽略不计，因为大部分区中的对象都能被认为是垃圾，永远也不会被复制到Survivor区或者老年代空间。若情况相反，即Eden区大部分新生对象不符合GC条件，那么Minor GC执行时暂停的时间将会长很多。
+		B.Major GC或Old GC - 老年代空间回收内存
+			a.很多Major GC右Major GC触发，所以大多情况下两种GC分离不太可能。
+			b.Minor GC作用于年轻代，Major GC作用于老年代。分配对象内存时发现内存不够，会触发Minor GC，Minor GC会将对象移到老年代中。如果此时老年代空间不够，那么触发Major GC。因此Major GC很多情况下是由Minor GC引起的。
+		C.Full GC：清理整个堆空间，包括年轻代、老年代和永久代（如有）。因此Full GC可以说是Minor GC和Major GC的结合。
+			a.准备触发Minor GC时，如果发现年轻代的剩余空间比以往晋升空间小，则不会触发Minor GC而是转为触发Full GC。
+			b.永久代分配空间但已没有足够空间时，也会触发Full GC。
+		D.Stop-The-World：所有非垃圾回收线程都无法工作。Stop-The-World时间的长短将关系到应用程序的响应时间，因此在GC过程中，Stop-The-World的时间是一个非常重要的指标。
+
+	
+	11）		
 		
